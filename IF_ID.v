@@ -29,6 +29,7 @@ module IF_ID(
     input [4:0] rs,
     input [4:0] rs2,
     input [4:0] rd,
+    input [6:0] opcode,
     input clk,
 
     output reg [31:0] pc_reg,
@@ -38,7 +39,8 @@ module IF_ID(
     output reg [31:0] imm_reg,
     output reg [4:0] rs_reg,
     output reg [4:0] rs2_reg,
-    output reg [4:0] rd_reg
+    output reg [4:0] rd_reg,
+    output reg [6:0] opcode_reg
     );
 
     always @(posedge clk) begin
@@ -50,6 +52,7 @@ module IF_ID(
         rs_reg <= rs;
         rs2_reg <= rs2;
         rd_reg <= rd;
+        opcode_reg <= opcode;
     end
 
 endmodule

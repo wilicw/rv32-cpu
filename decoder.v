@@ -20,15 +20,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module decoder (
-    input [31:0] pc,
-    input [2:0] inst_type,
-    input [4:0] rd,
     input [4:0] rs,
     input [4:0] rs2,
-    input [31:0] imm,
-    input [2:0] funct3,
-    input [5:0] funct7,
-
 
     output [31:0] val_rs,
     output [31:0] val_rs2 

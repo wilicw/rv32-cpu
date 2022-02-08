@@ -36,6 +36,7 @@ module core_tb;
     wire [4:0] rs2;
     wire [5:0] funct7;
     wire [31:0] imm;
+    wire [6:0] opcode;
 
     wire [31:0] if_id_pc;
     wire [2:0] if_id_inst_type;
@@ -45,6 +46,7 @@ module core_tb;
     wire [4:0] if_id_rs2;
     wire [5:0] if_id_funct7;
     wire [31:0] if_id_imm;
+    wire [6:0] if_id_opcode;
 
     wire [31:0] val_rs;
     wire [31:0] val_rs2;
@@ -57,6 +59,7 @@ module core_tb;
     wire [31:0] id_ex_val_rs;
     wire [31:0] id_ex_val_rs2;
     wire [4:0] id_ex_rd;
+    wire [6:0] id_ex_opcode;
 
     wire [31:0] exec_val_out;
     wire exec_reg_w;
@@ -65,6 +68,8 @@ module core_tb;
     wire exec_mem_r;
     wire [31:0] exec_mem_addr;
     wire [31:0] exec_mem_data;
+    wire [1:0] exec_mem_len;
+    wire exec_mem_uns;
     wire exec_branch;
     wire [31:0] exec_branch_pc;
 
@@ -75,6 +80,8 @@ module core_tb;
     wire ex_me_mem_r;
     wire [31:0] ex_me_mem_addr;
     wire [31:0] ex_me_mem_data;
+    wire [1:0] ex_me_mem_len;
+    wire ex_me_mem_uns;
     wire ex_me_branch;
     wire [31:0] ex_me_branch_pc;
 
@@ -101,10 +108,11 @@ module core_tb;
         .rs(rs),
         .rs2(rs2),
         .funct7(funct7),
-        .imm(imm)
+        .imm(imm),
+        .opcode(opcode)
     );
 
-    IF_ID u_ifid (
+    IF_ID u_reg_if_id (
         .pc(pc),
         .inst_type(inst_type),
         .funct3(funct3),
@@ -113,6 +121,7 @@ module core_tb;
         .rs(rs),
         .rs2(rs2),
         .rd(rd),
+        .opcode(opcode),
         .clk(clk),
 
         .pc_reg(if_id_pc),
@@ -122,16 +131,11 @@ module core_tb;
         .funct7_reg(if_id_funct7),
         .imm_reg(if_id_imm),
         .rs_reg(if_id_rs),
-        .rs2_reg(if_id_rs2)
+        .rs2_reg(if_id_rs2),
+        .opcode_reg(if_id_opcode)
     );
     
     decoder u_dec (
-        .pc(if_id_pc),
-        .inst_type(if_id_inst_type),
-        .rd(if_id_rd),
-        .funct3(if_id_funct3),
-        .funct7(if_id_funct7),
-        .imm(if_id_imm),
         .rs(if_id_rs),
         .rs2(if_id_rs2),
 
@@ -139,7 +143,7 @@ module core_tb;
         .val_rs2(val_rs2)
     );
 
-    ID_EX u_idex (
+    ID_EX u_reg_id_ex (
         .pc(if_id_pc),
         .inst_type(if_id_inst_type),
         .rd(if_id_rd),
@@ -148,6 +152,7 @@ module core_tb;
         .imm(if_id_imm),
         .val_rs(val_rs),
         .val_rs2(val_rs2),
+        .opcode(if_id_opcode),
         .clk(clk),
 
         .pc_reg(id_ex_pc),
@@ -157,7 +162,8 @@ module core_tb;
         .imm_reg(id_ex_imm),
         .val_rs_reg(id_ex_val_rs),
         .val_rs2_reg(id_ex_val_rs2),
-        .rd_reg(id_ex_rd)
+        .rd_reg(id_ex_rd),
+        .opcode_reg(id_ex_opcode)
     );
 
     exec u_exec (
@@ -168,6 +174,7 @@ module core_tb;
         .imm(id_ex_imm),
         .val_rs(id_ex_val_rs),
         .val_rs2(id_ex_val_rs2),
+        .opcode(id_ex_opcode),
 
         .val_out(exec_val_out),
         .reg_w(exec_reg_w),
@@ -176,11 +183,13 @@ module core_tb;
         .mem_r(exec_mem_r),
         .mem_addr(exec_mem_addr),
         .mem_data(exec_mem_data),
+        .mem_len(exec_mem_len),
+        .mem_uns(exec_mem_uns),
         .branch(exec_branch),
         .branch_pc(exec_branch_pc)
     );
 
-    EX_ME u_exme(
+    EX_ME u_reg_ex_me(
         .val_out(exec_val_out),
         .reg_w(exec_reg_w),
         .reg_data(exec_reg_data),
@@ -188,6 +197,8 @@ module core_tb;
         .mem_r(exec_mem_r),
         .mem_addr(exec_mem_addr),
         .mem_data(exec_mem_data),
+        .mem_len(exec_mem_len),
+        .mem_uns(exec_mem_uns),
         .branch(exec_branch),
         .branch_pc(exec_branch_pc),
         .clk(clk),
@@ -199,6 +210,8 @@ module core_tb;
         .mem_r_reg(ex_me_mem_r),
         .mem_addr_reg(ex_me_mem_addr),
         .mem_data_reg(ex_me_mem_data),
+        .mem_len_reg(ex_me_mem_len),
+        .mem_uns_reg(ex_me_mem_uns),
         .branch_reg(ex_me_branch),
         .branch_pc_reg(ex_me_branch_pc)
     );
@@ -208,17 +221,7 @@ module core_tb;
         $dumpvars(0, core_tb);
 
         clk = 0;
-        instruction = 32'h01028293;
-        #10
-        instruction = 32'h26771c63;
-        #10
-        instruction = 32'h00119193;
-        #10
-        instruction = 32'h0020c733;
-        #10
-        instruction = 32'h0100026f;
-        #10
-        instruction = 32'hfff28293;
+        instruction = 32'h00112a23;
 
         #100
         $finish;

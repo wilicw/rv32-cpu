@@ -29,6 +29,8 @@ module EX_ME(
     input mem_r,
     input [31:0] mem_addr,
     input [31:0] mem_data,
+    input [1:0] mem_len,
+    input mem_uns,
     input branch,
     input [31:0] branch_pc,
     input clk,
@@ -40,6 +42,8 @@ module EX_ME(
     output reg mem_r_reg,
     output reg [31:0] mem_addr_reg,
     output reg [31:0] mem_data_reg,
+    output reg [1:0] mem_len_reg,
+    output reg mem_uns_reg,
     output reg branch_reg,
     output reg [31:0] branch_pc_reg
   );
@@ -52,6 +56,8 @@ module EX_ME(
     mem_r_reg <= mem_r;
     mem_addr_reg <= mem_addr;
     mem_data_reg <= mem_data;
+    mem_len_reg <= mem_len;
+    mem_uns_reg <= mem_uns;
     branch_reg <= branch;
     branch_pc_reg <= branch_pc;
   end

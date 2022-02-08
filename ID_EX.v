@@ -29,6 +29,7 @@ module ID_EX(
     input [31:0] val_rs,
     input [31:0] val_rs2,
     input [4:0] rd,
+    input [6:0] opcode,
     input clk,
 
     output reg [31:0] pc_reg,
@@ -38,7 +39,8 @@ module ID_EX(
     output reg [31:0] imm_reg,
     output reg [31:0] val_rs_reg,
     output reg [31:0] val_rs2_reg,
-    output reg [4:0] rd_reg
+    output reg [4:0] rd_reg,
+    output reg [6:0] opcode_reg
     );
 
     always @(negedge clk) begin
@@ -50,6 +52,7 @@ module ID_EX(
         val_rs_reg <= val_rs;
         val_rs2_reg <= val_rs2;
         rd_reg <= rd;
+        opcode_reg <= opcode;
     end
 
 endmodule

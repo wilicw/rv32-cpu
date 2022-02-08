@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 `include "define.v"
-
+`include "exec.v"
 
 module fetch(
     input branch,
@@ -36,10 +36,9 @@ module fetch(
     output [4:0] rs,
     output [4:0] rs2,
     output [5:0] funct7,
-    output [31:0] imm
+    output [31:0] imm,
+    output [6:0] opcode
     );
-
-    wire [6:0] opcode;
 
     wire rtype;
     wire itype;
@@ -109,8 +108,41 @@ module branch_prediction(
     output [31:0] next_pc
     );
 
-    wire imm_branch = ( `B_TYPE == inst_type ) | ( `U_TYPE == inst_type ) | ( `J_TYPE == inst_type );
+    wire [31:0] sign_imm12;
+    wire [31:0] sign_imm13;
+    wire [31:0] sign_imm21;
 
-    assign next_pc = imm_branch ? pc + imm : pc_nb;
+    wire [31:0] offset = 
+        inst_type == `J_TYPE ? sign_imm21 :
+        inst_type == `I_TYPE ? sign_imm13 :
+        0; 
+
+    wire imm_branch = ( `B_TYPE == inst_type ) | ( `J_TYPE == inst_type );
+
+    assign next_pc = imm_branch ? pc + offset : pc_nb;
+
+    sign_ext #(
+        .bits(32),
+        .sign_bit(12)
+    ) u_se12 (
+        .in(imm),
+        .out(sign_imm12)
+    );
+
+    sign_ext #(
+        .bits(32),
+        .sign_bit(13)
+    ) u_se13 (
+        .in(imm),
+        .out(sign_imm13)
+    );
+
+    sign_ext #(
+        .bits(32),
+        .sign_bit(21)
+    ) u_se21 (
+        .in(imm),
+        .out(sign_imm21)
+    );
 
 endmodule

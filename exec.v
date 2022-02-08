@@ -29,6 +29,7 @@ module exec (
     input [31:0] imm,
     input [31:0] val_rs,
     input [31:0] val_rs2,
+    input [6:0] opcode,
 
     output [31:0] val_out,
     output reg_w,
@@ -37,6 +38,8 @@ module exec (
     output mem_r,
     output [31:0] mem_addr,
     output [31:0] mem_data,
+    output [1:0] mem_len,
+    output mem_uns,
     output branch,
     output [31:0] branch_pc
     );
@@ -123,6 +126,13 @@ module exec (
         ( inst_type == `I_TYPE ) ;
 
     assign reg_data = inst_type == `J_TYPE ? pc + 4 : val_out;
+
+    assign mem_w = opcode == `STORE | opcode == `STORE_FP;
+    assign mem_r = opcode == `LOAD | opcode == `LOAD_FP;
+    assign mem_addr = val_rs + sign_imm12;
+    assign mem_data = val_rs2;
+    assign mem_len = funct3[1:0];
+    assign mem_uns = funct3[2];
 
     sign_ext #(
         .bits(32),
